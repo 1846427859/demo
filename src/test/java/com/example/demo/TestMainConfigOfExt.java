@@ -1,7 +1,6 @@
 package com.example.demo;
 
 import com.example.ext.ExtConfig;
-import com.sun.org.apache.xpath.internal.operations.String;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
