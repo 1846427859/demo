@@ -87,7 +87,7 @@ import org.springframework.context.annotation.Configuration;
  *       2，finishBeanFactoryInitialization(beanFactory);初始化剩下的单实例 Bean
  *          1，先创建所有的单实例Bean；getBean()
  *          2，获取所有创建好的单实例Bean，判断是否是SmartInitializingSingleton类型；
- *              如果是就调用
+ *              如果是就调用afterSingletonsInstantiated();
  *
  *
  *
