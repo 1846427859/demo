@@ -41,6 +41,8 @@ import org.springframework.context.annotation.Configuration;
  *
  *      步骤：
  *          1，写一个监听器监听某个事件（ApplicationEvent及其子类）
+ *              - @EventListener
+ *                  原理：使用 EventListenerMethodProcessor 处理器来解析方法上的 @EventListener 注解
  *          2，把监听器加入到容器
  *          3，只要容器中有相关事件的发布，我们就能监听到这个事件
  *              ContextClosedEvent：关闭容器会发布这个事件
@@ -80,7 +82,12 @@ import org.springframework.context.annotation.Configuration;
  *
  *
  *
- *
+ *  SmartInitializingSingleton 原理：
+ *       1，容器创建对象：refresh()
+ *       2，finishBeanFactoryInitialization(beanFactory);初始化剩下的单实例 Bean
+ *          1，先创建所有的单实例Bean；getBean()
+ *          2，获取所有创建好的单实例Bean，判断是否是SmartInitializingSingleton类型；
+ *              如果是就调用
  *
  *
  *
