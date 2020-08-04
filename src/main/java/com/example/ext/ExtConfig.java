@@ -89,7 +89,7 @@ import org.springframework.context.annotation.Configuration;
  *          2，获取所有创建好的单实例Bean，判断是否是SmartInitializingSingleton类型；
  *              如果是就调用afterSingletonsInstantiated();
  *
- *
+ * 
  *
  */
 @Configuration
