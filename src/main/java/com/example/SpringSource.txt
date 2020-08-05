@@ -49,6 +49,74 @@ Spring 容器的 refresh() 创建刷新：
                 postProcessor.postProcessBeanFactory(beanFactory);
 
     6，registerBeanPostProcessors(beanFactory);注册 BeanPostProcessor（Bean的后置处理器）作用：intercept bean creation
+        不同接口类型的 BeanPostProcessor；在Bean创建前后的执行时机是不一样的
+        BeanPostProcessor
+        DestructionAwareBeanPostProcessor
+        InstantiationAwareBeanPostProcessor
+        SmartInstantiationAwareBeanPostProcessor
+        MergedBeanDefinitionPostProcessor
+        1，获取所有的 BeanPostProcessor；后置处理器都默认可以通过 PriorityOrdered、Ordered接口指定优先级
+        2，先注册 PriorityOrdered优先级接口的 BeanPostProcessor
+            把每一个 BeanPostProcessor添加到BeanFactory中，beanFactory.addBeanPostProcessor(postProcessor);
+        3，再注册 Ordered接口的BeanPostProcessor
+        4，再注册没有实现任何优先级接口的 BeanPostProcessor
+        5，最后注册 MergedBeanDefinitionPostProcessor
+        6，注册一个 ApplicationListenerDetector，在Bean创建完成后检查该Bean是否是 ApplicationListener
+            如果是 ApplicationListener： this.applicationContext.addApplicationListener((ApplicationListener<?>) bean);
+
+    7，initMessageSource();初始化MessageSource组件（做国际化、消息绑定、消息解析）
+        1，获取BeanFactory
+        2，判断容器中是否有 messageSource的 MessageSource组件
+            如果有赋值给 messageSource属性，如果没有创建一个 DelegatingMessageSource对象
+            messageSource：取出国际化配置文件中的某个key的值，能按照区域信息获取
+        3，把创建好的 MessageSource组件注册到容器中，以后可以自动注入 MessageSource组件
+            beanFactory.registerSingleton(MESSAGE_SOURCE_BEAN_NAME, this.messageSource);
+            MessageSource.getMessage(String code, @Nullable Object[] args, Locale locale)
+
+    8，initApplicationEventMulticaster();初始化事件派发器
+        1，获取BeanFactory
+        2，判断容器中是否有 ApplicationEventMulticaster组件
+            如果没有创建一个 SimpleApplicationEventMulticaster组件
+        3，把创建好的 SimpleApplicationEventMulticaster 注册到容器中
+            beanFactory.registerSingleton(APPLICATION_EVENT_MULTICASTER_BEAN_NAME, this.applicationEventMulticaster);
+
+    9，onRefresh();留给子类进行拓展refresh()使用的空方法
+        1，子类重写这个方法，在容器刷新的时候可以自定义逻辑；
+
+    10，registerListeners();在容器中注册项目里面所有的 ApplicationListener组件
+        1，从容器中拿到所有的 ApplicationListener组件
+        2，将每个监听器添加到事件派发器中
+            getApplicationEventMulticaster().addApplicationListener(listener);
+        3，派发之前步骤产生的事件
+            getApplicationEventMulticaster().multicastEvent(earlyEvent);
+
+    11，finishBeanFactoryInitialization(beanFactory);初始化所有剩下的单实例Bean
+        1，beanFactory.preInstantiateSingletons();初始化剩下的单实例Bean
+            1，获取容器中所有的Bean的名字，依次进行初始化和创建对象
+            2，获取Bean的定义信息 RootBeanDefinition
+            3，判断Bean不是抽象的、单实例的，非懒加载的
+                1，判断是否是FactoryBean；是否实现FactoryBean接口的Bean
+                2，不是工厂Bean，利用getBean(beanName) 创建对象
+                    0，getBean(beanName)
+                    1，doGetBean(beanName, null, null, false)
+                    2，先获取缓存中保存的单实例Bean，如果能获取到说明这个Bean之前被创建过（所有被创建过的单实例Bean都会被缓存起来）
+                        private final Map<String, Object> singletonObjects = new ConcurrentHashMap<>(256);
+                    3，缓存中获取不到，开始Bean的创建对象流程
+                    4，标记当前Bean已经被创建 markBeanAsCreated(beanName);
+                    5，获取Bean的定义信息 final RootBeanDefinition mbd = getMergedLocalBeanDefinition(beanName);
+                    6，获取当前Bean依赖的其它Bean，如果有按照getBean()把依赖的Bean先创建出来 mbd.getDependsOn();
+                    7，启动单实例Bean的创建流程
+                        1，createBean(beanName, mbd, args);
+                        2，Object bean = resolveBeforeInstantiation(beanName, mbdToUse);让BeanPostProcessor先拦截返回代理对象
+                            【InstantiationAwareBeanPostProcessor】：提前执行
+                                先触发 postProcessBeforeInstantiation()
+                                如果有返回值，再触发 postProcessAfterInitialization()
+                                源码如下：
+                                bean = applyBeanPostProcessorsBeforeInstantiation(targetType, beanName);
+                                if (bean != null) {
+                                    bean = applyBeanPostProcessorsAfterInitialization(bean, beanName);
+                                }
+
 
 
 
