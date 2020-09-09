@@ -141,6 +141,7 @@ Spring 容器的 refresh() 创建刷新：
                             5，注册 Bean 的销毁方法 registerDisposableBeanIfNecessary(beanName, bean, mbd);
                         4，将创建的Bean添加到 singletonObjects缓存中 addSingleton(beanName, singletonObject);
                             IOC容器就是这些Map，很多的Map里面保存了单实例Bean、环境信息等
+                            循环依赖：singletonObjects、earlySingletonObjects、singletonFactories
 
             4，所有的Bean都创建完以后，在遍历所有的Bean对象
                 判断是否实现了 SmartInitializingSingleton接口，如果实现了该接口则调用 SmartInitializingSingleton.afterSingletonsInstantiated();

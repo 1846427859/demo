@@ -112,6 +112,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
  *                  ObjenesisCglibAopProxy  Cglib的动态代理
  *          4，给容器中返回使用cglib增强了的代理对象
  *          5，以后容器中获取到的就是这个代理对象，执行目标方法的时候，代理对象就会执行通知方法的流程
+ *  ======================以上是创建代理对象的过程==================================
  *  3，目标方法执行
  *      容器中保存了组件的代理对象（Cglib增强后的对象），这个对象里面保存了详细信息（如：增强器、目标对象...）
  *      1，CglibAopProxy.DynamicAdvisedInterceptor#intercept()拦截目标方法的执行
